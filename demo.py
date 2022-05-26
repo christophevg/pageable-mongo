@@ -11,7 +11,7 @@ db    = mongo["test"]
 db["collection"].drop()
 values = [ "value 1", "value 2", "value 3", "value 4" ]
 for _ in range(10000):
-  result =db["collection"].insert_one({ "key" : random.choice(values) })
+  result = db["collection"].insert_one({ "key" : random.choice(values) })
 
 def query(db):
   return db["collection"].find(
