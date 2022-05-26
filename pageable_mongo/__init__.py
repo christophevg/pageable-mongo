@@ -81,7 +81,10 @@ class Pageable():
     return query
 
   def _pageable(self, result):
-    total          = result["totalElements"]
+    try:
+      total = result["totalElements"]
+    except KeyError:
+      total = 0
     sorting        = bool(self.sort_on)
     paged          = bool(self.skip_to) or bool(self.limit_to)
     resultset_size = len(result["content"])
@@ -100,7 +103,7 @@ class Pageable():
     }
 
     result["first"]            = self.skip_to < self.limit_to
-    result["last"]             = ( result["totalElements"] - self.skip_to ) < self.limit_to
+    result["last"]             = ( total - self.skip_to ) < self.limit_to
     result["totalPages"]       = math.ceil(total / self.limit_to) if self.limit_to else 0
     result["numberOfElements"] = resultset_size
     result["number"]           = self.skip_to
