@@ -212,3 +212,97 @@ This example is also included in the repository:
 % python demo.py
 ```
 
+## Exposing Collections via (Flask-)Restful API
+
+Throwing Flask-Restful in the mix, a collection can be exposed like so:
+
+```python
+mongo = MongoClient()
+db    = Pageable(mongo["test"])
+
+class Collection(Resource):
+  def get(self):
+    # construct filters for arg=value as property filters
+    # semantics: check if value is part of that property
+    filters = {
+      arg :  { "$regex" : value, "$options" : "i" }
+      for arg, value in request.args.items()
+      if not arg in [ "sort", "order", "start", "limit" ]
+    }
+    db["collection"].find(filters, { "_id": False })
+
+    # add sorting
+    sort = request.args.get("sort",  None)
+    if sort:
+      order =request.args.get("order", None)
+      db["collection"].sort( sort, -1 if order == "desc" else 1)
+
+    # add paging
+    db["collection"].skip(int(request.args.get("start", 0)))
+    db["collection"].limit(int(request.args.get("limit", 0)))
+
+    return db.result
+
+api.add_resource( Collection, "/api" )
+```
+
+To test just pass `property=value` pairs and optionally include `limit=<int>`, `start=<int>`, `sort=<property>` and `order=desc`
+
+```console
+% curl "http://localhost:8000/api?value=value_1&limit=3&start=2&sort=key&order=desc"
+{
+  "content": [
+    {
+      "key": "key_4",
+      "value": "value_1"
+    },
+    {
+      "key": "key_4",
+      "value": "value_1"
+    },
+    {
+      "key": "key_4",
+      "value": "value_1"
+    }
+  ],
+  "totalElements": 2555,
+  "pageable": {
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "offset": 2,
+    "pageNumber": 0,
+    "pageSize": 3,
+    "paged": true,
+    "unpaged": false
+  },
+  "first": true,
+  "last": false,
+  "totalPages": 852,
+  "numberOfElements": 3,
+  "number": 2,
+  "size": 3,
+  "empty": false,
+  "sort": {
+    "sorted": true,
+    "unsorted": false,
+    "empty": false
+  }
+}
+```
+
+This example is also included in the repository:
+
+```console
+% pip install flask_restful gunicorn
+% gunicorn api:app
+[2022-05-26 17:41:40 +0200] [31123] [INFO] Starting gunicorn 20.1.0
+[2022-05-26 17:41:40 +0200] [31123] [INFO] Listening at: http://127.0.0.1:8000 (31123)
+[2022-05-26 17:41:40 +0200] [31123] [INFO] Using worker: sync
+[2022-05-26 17:41:40 +0200] [31140] [INFO] Booting worker with pid: 31140
+[2022-05-26 17:41:40 +0200] [api] [INFO] dropping 'collection'
+[2022-05-26 17:41:40 +0200] [api] [INFO] generating 10000 documents in 'collection'
+[2022-05-26 17:41:42 +0200] [api] [INFO] ready to answer queries...
+```
