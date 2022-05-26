@@ -18,8 +18,13 @@ class Pageable():
     self.collection = self.mongo[collection]
     return self
 
-  def __getattr__(self, collection):
-    return self[collection]
+  def __getattr__(self, attr):
+    if attr in self.mongo.list_collection_names():
+      return self[attr]
+    if self.collection is None:
+      return getattr(self.mongo, attr)
+    else:
+      return getattr(self.collection, attr)
 
   def find(self, match, projection=None):
     self.match     = match
