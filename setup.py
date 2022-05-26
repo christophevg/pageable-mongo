@@ -12,9 +12,7 @@ URL              = "https://github.com/christophevg/" + NAME
 README           = ".github/README.md"
 CLASSIFIERS      = [
   "Programming Language :: Python :: 3",
-  "Intended Audience :: Developers",
-  "development Topic :: Database",
-  
+  "Intended Audience :: Developers"
 ]
 INSTALL_REQUIRES = [
   "pymongo>=3.6",

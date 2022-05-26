@@ -2,7 +2,6 @@ a_description_for_the_package: Paging support for Mongo
 classifiers:
 - 'Programming Language :: Python :: 3'
 - 'Intended Audience :: Developers'
-- 'development Topic :: Database'
 console_scripts: []
 first_year_of_publication: '2022'
 github_account: christophevg
