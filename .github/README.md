@@ -206,4 +206,9 @@ Successfully installed pageable-mongo-0.0.1 pymongo-4.1.1
 }
 ```
 
+This example is also included in the repository:
+
+```console
+% python demo.py
+```
 
