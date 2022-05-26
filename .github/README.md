@@ -12,6 +12,20 @@ This is merely a quick implementation and packaging of a way to use Mongo featur
 
 All credits go to [https://stackoverflow.com/a/53220591](https://stackoverflow.com/a/53220591), and even more to the Mongo developers ;-)
 
+## Install
+
+The usual `pip install pageable-mongo` will behave as expected and will also install PyMongo if not available, simply because without it, things will go wrond ;-)
+
+```console
+% pip install pageable-mongo          
+Collecting pageable-mongo
+  Using cached pageable_mongo-0.0.1-py3-none-any.whl (4.2 kB)
+Collecting pymongo>=3.6
+  Using cached pymongo-4.1.1-cp38-cp38-macosx_12_0_arm64.whl
+Installing collected packages: pymongo, pageable-mongo
+Successfully installed pageable-mongo-0.0.1 pymongo-4.1.1
+```
+
 ## Minimal Survival Commands
 
 ```pycon
