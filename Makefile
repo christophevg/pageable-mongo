@@ -26,7 +26,7 @@ publish: dist
 PROJECT:=`find . -name '__init__.py' -maxdepth 2 | xargs dirname`
 
 lint:
-	@pylint ${PROJECT}
+	@pylint ${PROJECT} | tee lint.txt
 
 clean:
 	find . | grep '\.backup' | xargs rm
