@@ -13,6 +13,9 @@ requirements: .python-version requirements.txt
 upgrade: requirements
 	@pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
+test: requirements
+	tox
+
 dist: requirements
 	rm -rf $@
 	python setup.py sdist bdist_wheel
@@ -22,6 +25,9 @@ publish-test: dist
 
 publish: dist
 	twine upload dist/*
+
+coverage: test
+	coverage report
 
 PROJECT:=`find . -name '__init__.py' -maxdepth 2 | xargs dirname`
 
