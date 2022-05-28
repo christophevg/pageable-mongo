@@ -19,7 +19,7 @@ class Pageable():
     return self[attr]
 
 class PageableCollection():
-  
+
   def __init__(self, collection):
     self.collection = collection
     self.match      = None
@@ -28,6 +28,7 @@ class PageableCollection():
     self.order      = 1
     self.skip_to    = 0
     self.limit_to   = 0
+    self.result     = None
 
   def __getattr__(self, attr):
     return getattr(self.collection, attr)
