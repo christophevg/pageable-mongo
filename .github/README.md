@@ -86,8 +86,8 @@ Successfully installed pageable-mongo-0.0.1 pymongo-4.1.1
   }
 ]
 >>> # paged query
->>> pageable = query(Pageable(db))
->>> print(json.dumps(pageable.query,  indent=2))
+>>> result = query(Pageable(db))
+>>> print(json.dumps(result.query,  indent=2))
 [
   {
     "$match": {
@@ -144,7 +144,10 @@ Successfully installed pageable-mongo-0.0.1 pymongo-4.1.1
     }
   }
 ]
->>> print(json.dumps(pageable.result, indent=2))
+>>> print(json.dumps({
+...  "content"  : list(result),
+...  "pageable" : result.pageable
+... }, indent=2))
 {
   "content": [
     {
@@ -239,9 +242,12 @@ class Collection(Resource):
 
     # add paging
     db["collection"].skip(int(request.args.get("start", 0)))
-    db["collection"].limit(int(request.args.get("limit", 0)))
+    result = db["collection"].limit(int(request.args.get("limit", 0)))
 
-    return db.result
+    return {
+      "content"  : list(result),
+      "pageable" : result.pageable
+    }
 
 api.add_resource( Collection, "/api" )
 ```
