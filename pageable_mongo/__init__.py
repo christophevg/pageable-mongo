@@ -100,11 +100,16 @@ class PageableCollection():
     return query
 
   @property
-  def pageable(self):
+  def totalElements(self):
     try:
-      total = self.result["totalElements"]
-    except KeyError:
-      total = 0
+      return self.result["totalElements"]
+    except:
+      pass
+    return 0
+
+  @property
+  def pageable(self):
+    total          = self.totalElements
     sorting        = bool(self.sort_on)
     paged          = bool(self.skip_to) or bool(self.limit_to)
     resultset_size = len(self.result["content"])

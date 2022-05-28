@@ -60,8 +60,9 @@ class Collection(Resource):
     result = db["collection"].limit(int(request.args.get("limit", 0)))
 
     answer = {
-      "content"  : list(result),
-      "pageable" : result.pageable
+      "content"       : list(result),
+      "totalElements" : result.totalElements,
+      "pageable"      : result.pageable
     }
     end = timer()
     logger.info(f"answered query in {(end - start)*1000:.04}ms")

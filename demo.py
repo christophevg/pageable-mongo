@@ -27,6 +27,7 @@ print(json.dumps(list(rows), indent=2))
 result = query(Pageable(db))
 print(json.dumps(result.query, indent=2))
 print(json.dumps({
-  "content"  : list(result),
-  "pageable" : result.pageable
+  "content"       : list(result),
+  "totalElements" : result.totalElements,
+  "pageable"      : result.pageable
 }, indent=2))
