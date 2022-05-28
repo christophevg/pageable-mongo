@@ -24,6 +24,8 @@ rows = query(db)
 print(json.dumps(list(rows), indent=2))
 
 # paged query
-pageable = query(Pageable(db))
-print(json.dumps(pageable.query,  indent=2))
-print(json.dumps(pageable.result, indent=2))
+result = query(Pageable(db))
+print(json.dumps({
+  "content"  : list(result),
+  "pageable" : result.pageable
+}, indent=2))

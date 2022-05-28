@@ -1,12 +1,27 @@
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import math
 
 class Pageable():
 
   def __init__(self, mongo):
-    self.mongo      = mongo
-    self.collection = None
+    self.mongo       = mongo
+    self.collections = {}
+
+  def __getitem__(self, collection):
+    try:
+      return self.collections[collection]
+    except KeyError:
+      self.collections[collection] = PageableCollection(self.mongo[collection])
+    return self.collections[collection]
+
+  def __getattr__(self, attr):
+    return self[attr]
+
+class PageableCollection():
+  
+  def __init__(self, collection):
+    self.collection = collection
     self.match      = None
     self.projection = None
     self.sort_on    = None
@@ -14,17 +29,8 @@ class Pageable():
     self.skip_to    = 0
     self.limit_to   = 0
 
-  def __getitem__(self, collection):
-    self.collection = self.mongo[collection]
-    return self
-
   def __getattr__(self, attr):
-    if attr in self.mongo.list_collection_names():
-      return self[attr]
-    if self.collection is None:
-      return getattr(self.mongo, attr)
-    else:
-      return getattr(self.collection, attr)
+    return getattr(self.collection, attr)
 
   def find(self, match, projection=None):
     self.match     = match
@@ -64,9 +70,11 @@ class Pageable():
       }}
     ]
 
-  @property
-  def result(self):
-    return self._pageable(list(self.collection.aggregate(self.query))[0])
+  def __iter__(self):
+    # execute, cache
+    self.result = list(self.collection.aggregate(self.query))[0]
+    # return iter to results
+    return iter(self.result["content"])
 
   def _paginate(self):
     query = []
@@ -80,16 +88,17 @@ class Pageable():
       query.append({ "$limit" : self.limit_to })
     return query
 
-  def _pageable(self, result):
+  @property
+  def pageable(self):
     try:
-      total = result["totalElements"]
+      total = self.result["totalElements"]
     except KeyError:
       total = 0
     sorting        = bool(self.sort_on)
     paged          = bool(self.skip_to) or bool(self.limit_to)
-    resultset_size = len(result["content"])
+    resultset_size = len(self.result["content"])
 
-    result["pageable"] = {
+    stats = {
       "sort": {
         "sorted"   : sorting,
         "unsorted" : not sorting,
@@ -102,16 +111,16 @@ class Pageable():
       "unpaged"    : not paged
     }
 
-    result["first"]            = self.skip_to < self.limit_to
-    result["last"]             = ( total - self.skip_to ) < self.limit_to
-    result["totalPages"]       = math.ceil(total / self.limit_to) if self.limit_to else 0
-    result["numberOfElements"] = resultset_size
-    result["number"]           = self.skip_to
-    result["size"]             = self.limit_to
-    result["empty"]            = resultset_size == 0
-    result["sort"]             = {
+    stats["first"]            = self.skip_to < self.limit_to
+    stats["last"]             = ( total - self.skip_to ) < self.limit_to
+    stats["totalPages"]       = math.ceil(total / self.limit_to) if self.limit_to else 0
+    stats["numberOfElements"] = resultset_size
+    stats["number"]           = self.skip_to
+    stats["size"]             = self.limit_to
+    stats["empty"]            = resultset_size == 0
+    stats["sort"]             = {
       "sorted"   : sorting,
       "unsorted" : not sorting,
       "empty"    : resultset_size == 0
     }
-    return result
+    return stats

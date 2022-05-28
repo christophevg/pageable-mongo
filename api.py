@@ -57,9 +57,12 @@ class Collection(Resource):
 
     # add paging
     db["collection"].skip(int(request.args.get("start", 0)))
-    db["collection"].limit(int(request.args.get("limit", 0)))
+    result = db["collection"].limit(int(request.args.get("limit", 0)))
 
-    answer = db.result
+    answer = {
+      "content"  : list(result),
+      "pageable" : result.pageable
+    }
     end = timer()
     logger.info(f"answered query in {(end - start)*1000:.04}ms")
     return answer
