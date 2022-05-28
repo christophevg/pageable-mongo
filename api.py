@@ -61,7 +61,7 @@ class Collection(Resource):
 
     answer = {
       "content"       : list(result),
-      "totalElements" : result.totalElements,
+      "totalElements" : len(result),
       "pageable"      : result.pageable
     }
     end = timer()

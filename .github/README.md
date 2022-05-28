@@ -146,7 +146,7 @@ Successfully installed pageable-mongo-0.0.1 pymongo-4.1.1
 ]
 >>> print(json.dumps({
 ...  "content"  : list(result),
-...  "totalElements" : result.totalElements,
+...  "totalElements" : len(result),
 ...  "pageable" : result.pageable
 ... }, indent=2))
 {
@@ -247,7 +247,7 @@ class Collection(Resource):
 
     return {
       "content"       : list(result),
-      "totalElements" : result.totalElements,
+      "totalElements" : len(result),
       "pageable"      : result.pageable
     }
 
