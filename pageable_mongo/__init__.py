@@ -30,10 +30,20 @@ class PageableCollection():
     self.limit_to   = 0
     self.result     = None
 
+  def _reset(self):
+    self.match      = None
+    self.projection = None
+    self.sort_on    = None
+    self.order      = 1
+    self.skip_to    = 0
+    self.limit_to   = 0
+    self.result     = None
+
   def __getattr__(self, attr):
     return getattr(self.collection, attr)
 
   def find(self, match, projection=None):
+    self._reset()
     self.match     = match
     self.projection = projection
     return self
