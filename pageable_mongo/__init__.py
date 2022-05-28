@@ -28,7 +28,7 @@ class PageableCollection():
     self.order      = 1
     self.skip_to    = 0
     self.limit_to   = 0
-    self.result     = []
+    self.result     = {}
 
   def _reset(self):
     self.match      = None
@@ -37,7 +37,7 @@ class PageableCollection():
     self.order      = 1
     self.skip_to    = 0
     self.limit_to   = 0
-    self.result     = []
+    self.result     = {}
 
   def __getattr__(self, attr):
     return getattr(self.collection, attr)
